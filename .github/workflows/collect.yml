@@ -2,10 +2,10 @@ name: Collect Taipei YouBike 2.0/2.0E Snapshots (Hourly Resident Batch)
 
 on:
   schedule:
-    # 每小時 03 分觸發 1 次（刻意避開 00 分 GitHub Actions 全球排程塞車丟包尖峰）；
+    # 每小時 03 分（UTC / 台北時間皆為 :03 分）觸發 1 次，避開 :00 分排程尖峰；
     # 啟動後第 1 抓自動歸入 :00 刻度，接著駐留對齊 :10, :20, :30, :40, :50 每 10 分鐘抓 1 筆，
     # 並於約 :50 抓完後一次打包 Commit & Push（一天僅 24 次上傳、每日合併為單一 YYYY-MM-DD.csv.gz）。
-    - cron: "3 * * * *"
+    - cron: '3 * * * *'
 
   workflow_dispatch:
     inputs:
@@ -53,12 +53,13 @@ jobs:
       - name: 3. Run snapshot collector
         env:
           TZ: Asia/Taipei
+          DISPATCH_MODE: ${{ github.event.inputs.mode || '' }}
+          DISPATCH_INTERVAL: ${{ github.event.inputs.interval_minutes || '10' }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.mode }}" = "once" ]; then
-            python collect_snapshot.py --once --interval-minutes "${{ inputs.interval_minutes }}"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ "${DISPATCH_MODE}" = "once" ]; then
+            python collect_snapshot.py --once --interval-minutes "${DISPATCH_INTERVAL}"
           else
-            INTERVAL="${{ inputs.interval_minutes || '10' }}"
-            python collect_snapshot.py --resident-hour --interval-minutes "${INTERVAL}" --stop-minute 54
+            python collect_snapshot.py --resident-hour --interval-minutes "${DISPATCH_INTERVAL}" --stop-minute 54
           fi
 
       - name: 4. Commit and push hourly batch to main
