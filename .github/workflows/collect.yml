@@ -2,9 +2,10 @@ name: Collect Taipei YouBike 2.0/2.0E Snapshots (Hourly Resident Batch)
 
 on:
   schedule:
-    # 每小時整點觸發 1 次；啟動後駐留於雲端主機內，對齊 :00, :10, :20, :30, :40, :50 每 10 分鐘抓 1 筆，
+    # 每小時 03 分觸發 1 次（刻意避開 00 分 GitHub Actions 全球排程塞車丟包尖峰）；
+    # 啟動後第 1 抓自動歸入 :00 刻度，接著駐留對齊 :10, :20, :30, :40, :50 每 10 分鐘抓 1 筆，
     # 並於約 :50 抓完後一次打包 Commit & Push（一天僅 24 次上傳、每日合併為單一 YYYY-MM-DD.csv.gz）。
-    - cron: "0 * * * *"
+    - cron: "3 * * * *"
 
   workflow_dispatch:
     inputs:
@@ -36,7 +37,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 58
+    timeout-minutes: 55
 
     steps:
       - name: 1. Checkout repository
