@@ -1,0 +1,79 @@
+name: Collect Taipei YouBike 2.0/2.0E Snapshots (Hourly Resident Batch)
+
+on:
+  schedule:
+    # 每小時整點觸發 1 次；啟動後駐留於雲端主機內，對齊 :00, :10, :20, :30, :40, :50 每 10 分鐘抓 1 筆，
+    # 並於約 :50 抓完後一次打包 Commit & Push（一天僅 24 次上傳、每日合併為單一 YYYY-MM-DD.csv.gz）。
+    - cron: "0 * * * *"
+
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "執行模式（首次手動測試建議選 once，10 秒即可驗證成功）"
+        required: true
+        default: "once"
+        type: choice
+        options:
+          - once
+          - resident-hour
+      interval_minutes:
+        description: "快照間隔分鐘數（預設 10 分鐘）"
+        required: true
+        default: "10"
+        type: choice
+        options:
+          - "10"
+          - "5"
+          - "15"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: taipei-youbike-hourly-resident
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 58
+
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 2. Set up Python 3.12 (stdlib only, zero pip install)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 3. Run snapshot collector
+        env:
+          TZ: Asia/Taipei
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.mode }}" = "once" ]; then
+            python collect_snapshot.py --once --interval-minutes "${{ inputs.interval_minutes }}"
+          else
+            INTERVAL="${{ inputs.interval_minutes || '10' }}"
+            python collect_snapshot.py --resident-hour --interval-minutes "${INTERVAL}" --stop-minute 54
+          fi
+
+      - name: 4. Commit and push hourly batch to main
+        env:
+          TZ: Asia/Taipei
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No new snapshot changes to commit."
+            exit 0
+          fi
+          git commit -m "data(snapshot): $(date +'%Y-%m-%d %H:%M %Z') batch"
+          for attempt in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break
+            echo "Push retry ${attempt}/3..."
+            sleep 3
+          done
