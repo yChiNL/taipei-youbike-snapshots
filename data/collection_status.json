@@ -1,15 +1,15 @@
 {
-  "last_slot_time_taipei": "2026-11-19 12:50:00",
-  "last_fetched_at_taipei": "2026-11-19 12:50:05",
+  "last_slot_time_taipei": "2026-11-19 20:50:00",
+  "last_fetched_at_taipei": "2026-11-19 20:50:05",
   "latest_daily_file": "data/snapshots/2026-11-19.csv.gz",
-  "latest_daily_file_size_kb": 93.4,
-  "today_captured_slots": 7,
-  "today_total_rows": 12775,
+  "latest_daily_file_size_kb": 120.1,
+  "today_captured_slots": 9,
+  "today_total_rows": 16425,
   "taipei_stations_in_snapshot": 1825,
   "taipei_active_stations": 1801,
   "known_stations_in_meta": 1825,
-  "live_parked_yb2": 13006,
-  "live_parked_eyb": 3142,
-  "live_empty_docks": 33999,
-  "false_green_ge5_total_0_eyb_stations": 242
+  "live_parked_yb2": 12585,
+  "live_parked_eyb": 2809,
+  "live_empty_docks": 34390,
+  "false_green_ge5_total_0_eyb_stations": 232
 }
