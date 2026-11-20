@@ -1,15 +1,15 @@
 {
-  "last_slot_time_taipei": "2026-11-19 20:50:00",
-  "last_fetched_at_taipei": "2026-11-19 20:50:05",
-  "latest_daily_file": "data/snapshots/2026-11-19.csv.gz",
-  "latest_daily_file_size_kb": 120.1,
-  "today_captured_slots": 9,
-  "today_total_rows": 16425,
-  "taipei_stations_in_snapshot": 1825,
-  "taipei_active_stations": 1801,
-  "known_stations_in_meta": 1825,
-  "live_parked_yb2": 12585,
-  "live_parked_eyb": 2809,
-  "live_empty_docks": 34390,
-  "false_green_ge5_total_0_eyb_stations": 232
+  "last_slot_time_taipei": "2026-11-20 15:10:00",
+  "last_fetched_at_taipei": "2026-11-20 15:10:05",
+  "latest_daily_file": "data/snapshots/2026-11-20.csv.gz",
+  "latest_daily_file_size_kb": 1224.0,
+  "today_captured_slots": 92,
+  "today_total_rows": 167992,
+  "taipei_stations_in_snapshot": 1826,
+  "taipei_active_stations": 1805,
+  "known_stations_in_meta": 1826,
+  "live_parked_yb2": 14472,
+  "live_parked_eyb": 3142,
+  "live_empty_docks": 32872,
+  "false_green_ge5_total_0_eyb_stations": 234
 }
